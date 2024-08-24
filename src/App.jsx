@@ -9,6 +9,7 @@ import Nowplaying from './Components/Nowplaying'
 import MovieDetails from './Components/MovieDetails'
 import SearchMovie from './Components/SearchMovie'
 import Trending from './Components/Trending'
+import Filter from './Components/Filter'
 
  
 

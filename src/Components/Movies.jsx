@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from './Pagination';
 import { FaSearch } from 'react-icons/fa';
+import Filter from './Filter';
 
 const Movies = () => {
     const navigate = useNavigate();
@@ -10,17 +11,32 @@ const Movies = () => {
     const [postsPerPage, setPostsPerPage] = useState(8);
     const [input, setInput] = useState('');
     const [movies1, setMovies1] = useState([]);
-
     const lastPostIndex = currentPage * postsPerPage;
     const firstPostIndex = lastPostIndex - postsPerPage;
-    const currentPosts = movies.slice(firstPostIndex, lastPostIndex);
-    const totalPosts = movies.length; // Update this to reflect the actual total posts if needed
+    
+    const totalPosts = movies.length; 
+    const [filtered,setFiltered]=useState([]);
+    const [activeGenre,setActiveGenre]=useState(0);
 
     useEffect(() => {
-        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=22abeadcfc022241b78e1520137e687e`)
-            .then(res => res.json())
-            .then(json => setMovies(json.results));
-    }, []);
+        fetchData();
+        // console.log(movies);/
+        console.log(filtered);
+    },[]
+)
+          
+    
+
+const fetchData = async () => {
+    try {
+        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=22abeadcfc022241b78e1520137e687e`);
+        const data = await response.json();
+        setMovies(data.results);
+        setFiltered(data.results);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};
 
     useEffect(() => {
         if (input) {
@@ -39,12 +55,16 @@ const Movies = () => {
     const goToDetails = (id) => {
         navigate(`./MovieDetails/${id}`);
     };
+    const currentPosts = filtered.slice(firstPostIndex, lastPostIndex);
 
     return (
-        <>
+        <div className='bg-black '>
+             <Filter movies={movies} setFiltered={setFiltered} activeGenre={activeGenre} setActiveGenre={setActiveGenre}/>
+        
             <div className='bg-grey w-full rounded-lg h-full p-15 text-white'>
                 <div className="w-full max-w-md px-4 py-8 mx-auto">
                     <div className="relative">
+                       
                         <input
                             value={input}
                             type="text"
@@ -87,6 +107,7 @@ const Movies = () => {
                 ) : (
                     <div className="bg-[ FFFFFF] text-white">
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mx-4 lg:mx-40">
+                            
                             {currentPosts.map((movie) => (
                                 <div
                                     key={movie.id}
@@ -105,15 +126,15 @@ const Movies = () => {
                                 </div>
                             ))}
                         </div>
-                        <Pagination
+                         <Pagination
                             totalPosts={totalPosts}
                             postsPerPage={postsPerPage}
                             onPageChange={setCurrentPage}
-                        />
+                        /> 
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 };
 
